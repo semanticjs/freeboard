@@ -5,7 +5,7 @@
   "scripts": {
     "build": "grunt",
     "deploy": "npm version patch && npm run deploy:all",
-    "deploy:all": "npm version patch && npm run build && npm publish ./ --access public",
+    "deploy:all": "npm run build && npm publish ./ --access public",
     "start": "http-server"
   },
   "devDependencies": {
