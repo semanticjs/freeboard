@@ -27,8 +27,10 @@
 
             var data = dataPattern !== null ? JSON.parse(unescape(dataPattern)) : null;
 
-            if (!dataUrl && !data && window.LCU && window.LCU.State) {
-              dataUrl = window.LCU.State.FreeboardConfigURL;
+            if (window.LCU && window.LCU.State && !data) {
+              if (!dataUrl) {
+                dataUrl = window.LCU.State.FreeboardConfigURL;
+              }
 
               if (!dataUrl) {
                 data = window.LCU.State.FreeboardConfigData;
