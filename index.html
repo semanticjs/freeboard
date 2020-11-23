@@ -19,22 +19,18 @@
             //DOM Ready
             freeboard.initialize(true);
 
-            var hashpattern = window.location.hash.match(/(&|#)source=([^&]+)/);
+            var hashPattern = window.location.hash.match(/(&|#)source=([^&]+)/);
 
-            var dataUrl = hashpattern !== null ? hashpattern[2] : null;
+            var dataUrl = hashPattern !== null ? hashPattern[2] : null;
 
-            if (!dataUrl) {
-              dataUrl = window.LCU && window.LCU.State ? window.LCU.State.FreeboardConfigURL : null;
-            }
+            var dataPattern = window.location.hash ? window.location.hash.substr(6) : null;
 
-            var data = null;
+            var data = dataPattern !== null ? JSON.parse(unescape(dataPattern)) : null;
 
-            if (!dataUrl) {
-              hashpattern = window.location.hash.match(/(&|#)data=([^&]+)/);
+            if (!dataUrl && !data && window.LCU && window.LCU.State) {
+              dataUrl = window.LCU.State.FreeboardConfigURL;
 
-              data = hashpattern !== null ? hashpattern[2] : null;
-
-              if (!data) {
+              if (!dataUrl) {
                 data = window.LCU.State.FreeboardConfigData;
               }
             }
