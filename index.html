@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <title>freeboard</title>
-    <base href="/">
+    <base href="/" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
@@ -19,14 +19,24 @@
             //DOM Ready
             freeboard.initialize(true);
 
-            var dataUrl = null;
+            var hashpattern = window.location.hash.match(/(&|#)source=([^&]+)/);
 
-            if (window.LCU && window.LCU.State.FreeboardConfigURL) {
-              dataUrl = window.LCU.State.FreeboardConfigURL;
-            } else {
-              var hashpattern = window.location.hash.match(/(&|#)source=([^&]+)/);
+            var dataUrl = hashpattern !== null ? hashpattern[2] : null;
 
-              dataUrl = hashpattern !== null ? hashpattern[2] : null;
+            if (!dataUrl) {
+              dataUrl = window.LCU && window.LCU.State ? window.LCU.State.FreeboardConfigURL : null;
+            }
+
+            var data = null;
+
+            if (!dataUrl) {
+              hashpattern = window.location.hash.match(/(&|#)data=([^&]+)/);
+
+              data = hashpattern !== null ? hashpattern[2] : null;
+
+              if (!data) {
+                data = window.LCU.State.FreeboardConfigData;
+              }
             }
 
             if (dataUrl) {
@@ -35,8 +45,8 @@
                   freeboard.setEditing(false);
                 });
               });
-            } else if (window.LCU && window.LCU.State.FreeboardConfigData) {
-              freeboard.loadDashboard(window.LCU.State.FreeboardConfigData, function () {
+            } else if (data) {
+              freeboard.loadDashboard(data, function () {
                 freeboard.setEditing(false);
               });
             }
@@ -65,8 +75,8 @@
                 <li>
                   <i class="icon-download-alt icon-white"></i>
                   <label data-bind="click: saveDashboardClicked">Save Freeboard</label>
-                  <label style="display: none;" data-bind="click: saveDashboard" data-pretty="true">[Pretty]</label>
-                  <label style="display: none;" data-bind="click: saveDashboard" data-pretty="false">[Minified]</label>
+                  <label style="display: none" data-bind="click: saveDashboard" data-pretty="true">[Pretty]</label>
+                  <label style="display: none" data-bind="click: saveDashboard" data-pretty="false">[Minified]</label>
                 </li>
                 <li id="add-pane" data-bind="click: createPane"><i class="icon-plus icon-white"></i><label>Add Pane</label></li>
               </ul>
@@ -132,43 +142,43 @@
       </div>
     </header>
 
-    <div style="display: hidden;">
+    <div style="display: hidden">
       <ul data-bind="template: { name: 'pane-template', foreach: panes}"></ul>
     </div>
 
     <script type="text/html" id="pane-template">
       <li data-bind="pane: true">
-          <header>
-              <h1 data-bind="text: title"></h1>
-              <ul class="board-toolbar pane-tools">
-                  <li data-bind="pluginEditor: {operation: 'add', type: 'widget'}">
-                      <i class="icon-plus icon-white"></i>
-                  </li>
-                  <li data-bind="pluginEditor: {operation: 'edit', type: 'pane'}">
-                      <i class="icon-wrench icon-white"></i>
-                  </li>
-                  <li data-bind="pluginEditor: {operation: 'delete', type: 'pane'}">
-                      <i class="icon-trash icon-white"></i>
-                  </li>
+        <header>
+          <h1 data-bind="text: title"></h1>
+          <ul class="board-toolbar pane-tools">
+            <li data-bind="pluginEditor: {operation: 'add', type: 'widget'}">
+              <i class="icon-plus icon-white"></i>
+            </li>
+            <li data-bind="pluginEditor: {operation: 'edit', type: 'pane'}">
+              <i class="icon-wrench icon-white"></i>
+            </li>
+            <li data-bind="pluginEditor: {operation: 'delete', type: 'pane'}">
+              <i class="icon-trash icon-white"></i>
+            </li>
+          </ul>
+        </header>
+        <section data-bind="foreach: widgets">
+          <div class="sub-section" data-bind="css: 'sub-section-height-' + height()">
+            <div class="widget" data-bind="widget: true, css:{fillsize:fillSize}"></div>
+            <div class="sub-section-tools">
+              <ul class="board-toolbar">
+                <!-- ko if:$parent.widgetCanMoveUp($data) -->
+                <li data-bind="click:$parent.moveWidgetUp"><i class="icon-chevron-up icon-white"></i></li>
+                <!-- /ko -->
+                <!-- ko if:$parent.widgetCanMoveDown($data) -->
+                <li data-bind="click:$parent.moveWidgetDown"><i class="icon-chevron-down icon-white"></i></li>
+                <!-- /ko -->
+                <li data-bind="pluginEditor: {operation: 'edit', type: 'widget'}"><i class="icon-wrench icon-white"></i></li>
+                <li data-bind="pluginEditor: {operation: 'delete', type: 'widget'}"><i class="icon-trash icon-white"></i></li>
               </ul>
-          </header>
-          <section data-bind="foreach: widgets">
-              <div class="sub-section" data-bind="css: 'sub-section-height-' + height()">
-                  <div class="widget" data-bind="widget: true, css:{fillsize:fillSize}"></div>
-                  <div class="sub-section-tools">
-                      <ul class="board-toolbar">
-                          <!-- ko if:$parent.widgetCanMoveUp($data) -->
-                          <li data-bind="click:$parent.moveWidgetUp"><i class="icon-chevron-up icon-white"></i></li>
-                          <!-- /ko -->
-                          <!-- ko if:$parent.widgetCanMoveDown($data) -->
-                          <li data-bind="click:$parent.moveWidgetDown"><i class="icon-chevron-down icon-white"></i></li>
-                          <!-- /ko -->
-                          <li data-bind="pluginEditor: {operation: 'edit', type: 'widget'}"><i class="icon-wrench icon-white"></i></li>
-                          <li data-bind="pluginEditor: {operation: 'delete', type: 'widget'}"><i class="icon-trash icon-white"></i></li>
-                      </ul>
-                  </div>
-              </div>
-          </section>
+            </div>
+          </div>
+        </section>
       </li>
     </script>
   </body>
